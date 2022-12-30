@@ -45,5 +45,6 @@ const handleFile = async (ev: Event) => {
 }
 .csvViewer-csvGrid {
   flex-grow: 1;
+  overflow-x: auto;
 }
 </style>
