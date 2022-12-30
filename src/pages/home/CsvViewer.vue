@@ -62,7 +62,13 @@ const dragover = () => {
       @drop.prevent="handleDroppedFile"
       @dragover.prevent="dragover"
     >
-      <CsvGrid :records="csvRecords" />
+      <CsvGrid :records="csvRecords" >
+        <template #empty>
+          <pre>CSVファイルを選択もしくはここにドロップしてください。
+(SJIS, UTF-8が使用可能です。)
+        </pre>
+        </template>
+      </CsvGrid>
     </div>
   </div>
 </template>

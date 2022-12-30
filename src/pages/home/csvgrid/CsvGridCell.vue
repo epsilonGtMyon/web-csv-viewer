@@ -54,7 +54,7 @@ const classes = computed(() => {
     class="csvGridCell"
     :class="classes"
     @mousedown="selectStart"
-    @mousemove="selectMove"
+    @mousemove.passive="selectMove"
     @mouseup="selectEnd"
   >
     <slot>
