@@ -8,29 +8,60 @@ const csvRecords = ref<string[][]>([]);
 
 const csvReader = new CsvReader();
 
-const handleFile = async (ev: Event) => {
-  const target = ev.target as HTMLInputElement;
-  const file = (target.files as FileList)[0];
-
-  let csvText: string;
+async function loadCsvFile(file: File) {
   try {
-    csvText = await decodeTextFile(file);
+    return await decodeTextFile(file);
   } catch (e) {
     // TODO エラー
     console.error(e);
+    throw e;
+  }
+}
+
+const handleFile = async (ev: Event) => {
+  const target = ev.target as HTMLInputElement;
+  const file = (target.files as FileList)[0];
+  if (file == null) {
     return;
   }
 
-  csvRecords.value = csvReader.readAll([...csvText]);
+  try {
+    const csvText = await loadCsvFile(file);
+    csvRecords.value = csvReader.readAll([...csvText]);
+  } catch (e) {
+    return;
+  }
+};
+
+const handleDroppedFile = async (ev: DragEvent) => {
+  const file = ev.dataTransfer?.files[0];
+  if (file == null) {
+    return;
+  }
+
+  try {
+    const csvText = await loadCsvFile(file);
+    csvRecords.value = csvReader.readAll([...csvText]);
+  } catch (e) {
+    return;
+  }
+};
+
+const dragover = () => {
+  // これしておかないと ダウンロードしてしまう。
 };
 </script>
 
 <template>
   <div class="csvViewer">
     <div class="csvViewer-operationArea">
-      <input type="file" @change="handleFile" />
+      <input type="file" @change="handleFile" accept=".csv" />
     </div>
-    <div class="csvViewer-csvGrid">
+    <div
+      class="csvViewer-csvGrid"
+      @drop.prevent="handleDroppedFile"
+      @dragover.prevent="dragover"
+    >
       <CsvGrid :records="csvRecords" />
     </div>
   </div>
